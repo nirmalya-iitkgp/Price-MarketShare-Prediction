@@ -5,6 +5,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.impute import SimpleImputer
 import tensorflow as tf
 from tensorflow.keras.layers import Embedding, LSTM, Dense, Concatenate
+import pickle
 
 # Load Month-Wise Data
 file_path = '/content/input data file.xlsx'  # Replace with your file path
@@ -119,6 +120,12 @@ history = model.fit(
     batch_size=32,
     callbacks=[tf.keras.callbacks.EarlyStopping(patience=5, restore_best_weights=True)]
 )
+
+model.save('market_share_model.h5') # Save the model
+with open('sku_encoder.pkl', 'wb') as f: # Save the SKU encoder
+    pickle.dump(sku_encoder, f)
+with open('price_scaler.pkl', 'wb') as f: # Save the price scaler
+    pickle.dump(scaler, f)
 
 # Evaluate Model
 loss, mae = model.evaluate([X_seq_test, sku_indices_test, X_static_test], y_test)
